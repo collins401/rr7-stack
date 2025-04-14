@@ -1,87 +1,62 @@
-# Welcome to React Router!
+# rr7-stack
 
-A modern, production-ready template for building full-stack React applications using React Router.
+一个现代化的 React 全栈应用模板，集成了 React Router 7、Drizzle ORM、TailwindCSS 和 TypeScript。
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+## 技术栈
 
-## Features
+- **前端框架**: React 19
+- **路由**: React Router 7
+- **数据库 ORM**: Drizzle ORM
+- **数据库**: SQLite (better-sqlite3)
+- **样式**: TailwindCSS + Shadcn UI
+- **表单处理**: React Hook Form + Zod
+- **开发工具**: TypeScript, ESLint, Prettier
+- **构建工具**: Vite
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+## 特性
 
-## Getting Started
+- 🚀 基于 React Router 7 的现代路由系统
+- 📦 使用 Drizzle ORM 进行数据库操作
+- 💅 集成 Shadcn UI 组件库和 TailwindCSS
+- 🔒 内置用户认证支持 (bcryptjs)
+- 📝 类型安全的表单处理 (React Hook Form + Zod)
+- 🛠️ 完整的 TypeScript 支持
 
-### Installation
+## 快速开始
 
-Install the dependencies:
+### 安装依赖
 
 ```bash
 npm install
-```
 
-### Development
+# 生成数据库迁移
+npm run db:generate
 
-Start the development server with HMR:
+# 执行数据库迁移
+npm run db:migrate
 
-```bash
+# 启动开发服务器
 npm run dev
+
 ```
 
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
+## 项目结构
 
 ```bash
-npm run build
+rr7-stack/
+├── app/ # 应用源代码目录
+│ ├── components/ # 共享组件
+│ │ ├── ui/ # 基础 UI 组件
+│ │ └── shared/ # 业务共享组件
+│ ├── config/ # 应用配置
+│ ├── database/ # 数据库相关
+│ │ └── schema/ # 数据库模型定义
+│ ├── hooks/ # 自定义 React Hooks
+│ ├── lib/ # 工具函数库
+│ ├── routes/ # 路由页面
+│ │ ├── \dashboard+/ # 后台管理页面
+│ │ └── \_site+/ # 前台页面├── build/ # 构建输出目录
+├── drizzle/ # Drizzle ORM 配置和迁移
+├── public/ # 静态资源
+└── package.json # 项目配置文件
 ```
-
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
