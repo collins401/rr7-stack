@@ -55,20 +55,14 @@ export default function SiteLayout({ loaderData }: Route.ComponentProps) {
             <Logo />
             <span>RR7-STACK</span>
           </div>
-          <div className="flex items-center gap-4 py-3">
+          <div className="flex items-center gap-2 py-3">
             {user ? (
-              <div className="flex items-center gap-4">
-                {/* 欢迎, {user.username} */}
-                <UserNav user={user} />
-              </div>
+              <UserNav user={user} />
             ) : (
-              <Button variant="link" size="icon" className="rounded-full">
-                <Link to="/dashboard">
-                  <UserRound />
-                </Link>
-              </Button>
+              <Link to="/dashboard">
+                <UserRound size={18} />
+              </Link>
             )}
-
             <ThemeSelector />
           </div>
         </div>
