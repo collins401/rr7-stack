@@ -32,7 +32,6 @@ export const todo = sqliteTable(
   },
   todo => [index("todo_userId_idx").on(todo.userId)]
 );
-
 // 添加 todo 表的关系定义
 export const todoRelations = relations(todo, ({ one }) => ({
   user: one(user, {
@@ -40,3 +39,19 @@ export const todoRelations = relations(todo, ({ one }) => ({
     references: [user.id]
   })
 }));
+
+export const visitorStats = sqliteTable(
+  "visitor_stats",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    ip: text("ip").notNull().unique(),
+    visitCount: integer("visit_count").notNull().default(1),
+    firstVisit: integer("first_visit", { mode: "timestamp" })
+      .default(sql`(unixepoch())`)
+      .notNull(),
+    lastVisit: integer("last_visit", { mode: "timestamp" })
+      .default(sql`(unixepoch())`)
+      .notNull()
+  },
+  visitorStats => [index("visitor_stats_ip_idx").on(visitorStats.ip)]
+);
