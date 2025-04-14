@@ -55,7 +55,7 @@ export default function SiteLayout({ loaderData }: Route.ComponentProps) {
             <Logo />
             <span>RR7-STACK</span>
           </div>
-          <div className="flex items-center gap-2 py-3">
+          <div className="flex items-center gap-3 py-3">
             {user ? (
               <UserNav user={user} />
             ) : (
