@@ -1,0 +1,27 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- 主框架 -->
+  <rect 
+    x="40" y="40" 
+    width="120" height="120" 
+    fill="none" 
+    stroke="#2563eb" 
+    stroke-width="8" 
+    rx="15"
+  />
+   <!-- 平行线条组 -->
+  <path 
+    d="M60 80 L140 80 M60 120 L140 120" 
+    stroke="#60a5fa" 
+    stroke-width="6" 
+    stroke-linecap="round"
+  />
+  
+  <!-- 中心方块 - 45度旋转 -->
+  <rect 
+    x="85" y="85" 
+    width="30" height="30" 
+    transform="rotate(45 100 100)" 
+    fill="#3b82f6"
+  />
+  
+</svg>
