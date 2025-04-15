@@ -1,9 +1,8 @@
-import { Form, Link, Outlet, useLoaderData } from "react-router";
+import { Link, Outlet } from "react-router";
 import { sql } from "drizzle-orm/sql";
 import { UserRound } from "lucide-react";
 import { Logo } from "@/components/icons";
 import { ThemeSelector } from "@/components/theme-selector";
-import { Button } from "@/components/ui/button";
 import { UserNav } from "@/components/user-nav";
 import db from "@/database/db.server";
 import { visitorStats } from "@/database/schema";
@@ -13,7 +12,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("userId");
   const username = session.get("username");
-
+  const avatar = session.get("avatar");
+  const email = session.get("email");
   // 获取访客IP
   const forwarded = request.headers.get("x-forwarded-for");
   const ip = forwarded ? forwarded.split(/, /)[0] : request.headers.get("x-real-ip");
@@ -40,7 +40,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     .from(visitorStats);
 
   return {
-    user: userId ? { userId, username } : null,
+    user: userId ? { userId, username, email, avatar } : null,
     totalVisits: totalVisits.total || 0
   };
 }

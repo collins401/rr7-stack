@@ -22,7 +22,10 @@ export function UserNav({ user }: { user: Awaited<ReturnType<typeof loader>>["us
         <Button variant="outline" size="icon" className="size-8 rounded-full">
           {/* <User className="text-green-600" /> */}
           <Avatar className="size-8">
-            <AvatarImage src={"/avatar.svg"} alt={user?.username ?? "User avatar"} />
+            <AvatarImage
+              src={user?.avatar || "/avatar.svg"}
+              alt={user?.username ?? "User avatar"}
+            />
             <AvatarFallback className="text-xs font-bold uppercase">
               {user?.username?.slice(0, 2)}
             </AvatarFallback>
