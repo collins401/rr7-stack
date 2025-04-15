@@ -4,10 +4,8 @@ import {
   Bot,
   Command,
   Frame,
-  LifeBuoy,
   Map,
   PieChart,
-  Send,
   Settings2,
   SquareTerminal
 } from "lucide-react";
@@ -118,18 +116,6 @@ const data = {
       ]
     }
   ],
-  navSecondary: [
-    {
-      title: "Support",
-      url: "#",
-      icon: LifeBuoy
-    },
-    {
-      title: "Feedback",
-      url: "#",
-      icon: Send
-    }
-  ],
   projects: [
     {
       name: "Design Engineering",
@@ -148,8 +134,11 @@ const data = {
     }
   ]
 };
-
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+import type { loader } from "@/routes/dashboard+/_layout";
+export function AppSidebar({
+  user,
+  ...props
+}: React.ComponentProps<typeof Sidebar> & { user: Awaited<ReturnType<typeof loader>>["user"] }) {
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -161,7 +150,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <Command className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Acme Inc</span>
+                  <span className="truncate font-semibold">后台管理系统</span>
                   <span className="truncate text-xs">Enterprise</span>
                 </div>
               </a>
@@ -172,10 +161,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavSecondary className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   );

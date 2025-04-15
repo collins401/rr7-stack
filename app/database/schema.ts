@@ -7,8 +7,9 @@ export const user = sqliteTable("user", {
     .$defaultFn(() => createId()), // 改为 cuid,
   username: text("username").notNull(),
   password: text("password").notNull(),
-  email: text("email"),
+  email: text("email").notNull(),
   avatar: text("avatar"),
+  provider: text("provider"),
   createdAt: integer("createdAt", { mode: "timestamp" })
     .default(sql`(unixepoch())`)
     .notNull(),

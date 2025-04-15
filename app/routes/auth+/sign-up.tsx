@@ -20,16 +20,12 @@ import { Route } from "./+types/sign-up";
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
-  const username = formData.get("Username") as string;
+  const username = formData.get("username") as string;
+  const email = formData.get("email") as string;
   const password = formData.get("password") as string;
-  const confirmPassword = formData.get("confirmPassword") as string;
   console.log("username", username);
-  if (!username || !password || !confirmPassword) {
+  if (!username || !password || !email) {
     return data({ message: "所有字段都是必填的" }, { status: 400 });
-  }
-
-  if (password !== confirmPassword) {
-    return data({ message: "密码不一致" }, { status: 400 });
   }
 
   // 检查用户名是否已存在
@@ -40,6 +36,14 @@ export async function action({ request }: Route.ActionArgs) {
     return data({ message: "用户名已存在" }, { status: 400 });
   }
 
+  // 检查邮箱是否已存在
+  const existingEmail = await db.query.user.findFirst({
+    where: (user, { eq }) => eq(user.email, email)
+  });
+  if (existingEmail) {
+    return data({ message: "邮箱已被注册" }, { status: 400 });
+  }
+
   try {
     // 对密码进行加密
     const salt = await bcrypt.genSalt(10);
@@ -48,6 +52,7 @@ export async function action({ request }: Route.ActionArgs) {
     // 创建新用户
     await db.insert(user).values({
       username,
+      email,
       password: hashedPassword
     });
 
@@ -65,6 +70,7 @@ export async function action({ request }: Route.ActionArgs) {
     const session = await getSession(request.headers.get("Cookie"));
     session.set("userId", newUser.id);
     session.set("username", username);
+    session.set("email", email);
 
     // 返回成功响应，并设置 session cookie
     return redirect("/", {
@@ -76,16 +82,11 @@ export async function action({ request }: Route.ActionArgs) {
     return data({ message: "注册失败，请稍后重试" }, { status: 500 });
   }
 }
-const formSchema = z
-  .object({
-    username: z.string().min(2, "用户名至少2个字符"),
-    password: z.string().min(6, "密码至少6个字符"),
-    confirmPassword: z.string()
-  })
-  .refine(data => data.password === data.confirmPassword, {
-    message: "密码不一致",
-    path: ["confirmPassword"]
-  });
+const formSchema = z.object({
+  username: z.string().min(2, "用户名至少2个字符"),
+  password: z.string().min(6, "密码至少6个字符"),
+  email: z.string().email("请输入正确的邮箱")
+});
 
 export default function SignUp({ actionData }: Route.ComponentProps) {
   const fetcher = useFetcher();
@@ -94,15 +95,15 @@ export default function SignUp({ actionData }: Route.ComponentProps) {
     defaultValues: {
       username: "",
       password: "",
-      confirmPassword: ""
+      email: ""
     }
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     const formData = new FormData();
-    formData.append("Username", values.username);
+    formData.append("username", values.username);
     formData.append("password", values.password);
-    formData.append("confirmPassword", values.confirmPassword);
+    formData.append("email", values.email);
     fetcher.submit(formData, { method: "post" });
   }
 
@@ -129,6 +130,19 @@ export default function SignUp({ actionData }: Route.ComponentProps) {
           />
           <FormField
             control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>邮箱</FormLabel>
+                <FormControl>
+                  <Input autoComplete="email" type="email" placeholder="请输入邮箱" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
             name="password"
             render={({ field }) => (
               <FormItem>
@@ -138,24 +152,6 @@ export default function SignUp({ actionData }: Route.ComponentProps) {
                     type="password"
                     autoComplete="new-password"
                     placeholder="请输入密码"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="confirmPassword"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>确认密码</FormLabel>
-                <FormControl>
-                  <Input
-                    type="password"
-                    autoComplete="new-password"
-                    placeholder="请再次输入密码"
                     {...field}
                   />
                 </FormControl>

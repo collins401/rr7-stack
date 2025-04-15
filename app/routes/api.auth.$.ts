@@ -65,6 +65,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       username: userInfo.login,
       email: userInfo.email,
       avatar: userInfo.avatar_url,
+      provider: "github",
       password: "" // GitHub 登录的用户不需要密码
     });
     // 获取刚创建的用户

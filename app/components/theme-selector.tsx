@@ -9,30 +9,41 @@ import { useHydrated } from "@/hooks/use-hydrated";
 import { Button } from "./ui/button";
 import { useTheme } from "./theme-switcher";
 
-export function ThemeSelector() {
+export function ThemeSelector({
+  children,
+  align = "end"
+}: {
+  align?: any;
+  children?: React.ReactNode;
+}) {
   const [theme, setTheme] = useTheme();
   const hydrated = useHydrated();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          size="icon"
-          variant="ghost"
-          title="Theme selector"
-          className="size-8 rounded-full ring-0 focus-visible:ring-opacity-0"
-        >
-          <span className="sr-only">Theme selector</span>
-          {!hydrated ? null : theme === "dark" ? (
-            <MoonIcon />
-          ) : theme === "light" ? (
-            <SunIcon />
-          ) : (
-            <LaptopIcon />
-          )}
-        </Button>
+        {children ? (
+          children
+        ) : (
+          <Button
+            size="icon"
+            variant="ghost"
+            title="Theme selector"
+            className="size-8 rounded-full ring-0 focus-visible:ring-opacity-0"
+          >
+            <span className="sr-only">Theme selector</span>
+
+            {!hydrated ? null : theme === "dark" ? (
+              <MoonIcon />
+            ) : theme === "light" ? (
+              <SunIcon />
+            ) : (
+              <LaptopIcon />
+            )}
+          </Button>
+        )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align={align}>
         <DropdownMenuItem asChild>
           <button
             type="button"

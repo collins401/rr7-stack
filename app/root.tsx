@@ -9,6 +9,7 @@ import {
 } from "react-router";
 import { Toaster } from "sonner";
 import type { Route } from "./+types/root";
+import { ProgressBar } from "./components/progress-bar";
 import { ThemeSwitcherSafeHTML, ThemeSwitcherScript } from "./components/theme-switcher";
 import { useNonce } from "./hooks/use-nonce";
 import { getLang } from "./lib/index";
@@ -33,6 +34,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <ThemeSwitcherScript nonce={nonce} />
       </head>
       <body>
+        <ProgressBar />
         {children}
         <Toaster richColors position="top-right" />
         <ScrollRestoration nonce={nonce} />
