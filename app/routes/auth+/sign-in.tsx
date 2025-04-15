@@ -20,6 +20,11 @@ import db from "@/database/db.server";
 import { commitSession, getSession } from "@/lib/session";
 import { Route } from "./+types/sign-in";
 
+export async function loader() {
+  return {
+    GITHUB_URL: `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&redirect_uri=${process.env.REDIRECT_URI}`
+  };
+}
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const username = formData.get("username") as string;
@@ -63,7 +68,7 @@ const formSchema = z.object({
   username: z.string().min(1, "请输入用户名"),
   password: z.string().min(1, "请输入密码")
 });
-export default function SignIn() {
+export default function SignIn({ loaderData }: Route.ComponentProps) {
   const [showPassword, setShowPassword] = useState(false);
   const fetcher = useFetcher();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -82,7 +87,7 @@ export default function SignIn() {
   }
 
   function loginGithub() {
-    location.href = `https://github.com/login/oauth/authorize?client_id=Ov23liFTXLB74ttqlgOn&redirect_uri=http://localhost:5173/api/auth/callback/github`;
+    location.href = loaderData.GITHUB_URL;
   }
 
   return (

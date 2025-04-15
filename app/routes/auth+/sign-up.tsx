@@ -1,7 +1,9 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { data, Link, redirect, useFetcher } from "react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import bcrypt from "bcryptjs";
+import { toast } from "sonner";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,20 +19,17 @@ import db from "@/database/db.server";
 import { user } from "@/database/schema";
 import { commitSession, getSession } from "@/lib/session";
 import { Route } from "./+types/sign-up";
-
+const formSchema = z.object({
+  username: z.string().min(2, "用户名至少2个字符"),
+  password: z.string().min(6, "密码至少6个字符"),
+  email: z.string().email("请输入正确的邮箱")
+});
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
-  const username = formData.get("username") as string;
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-  console.log("username", username);
-  if (!username || !password || !email) {
-    return data({ message: "所有字段都是必填的" }, { status: 400 });
-  }
-
+  const formDataObj = Object.fromEntries(formData) as z.infer<typeof formSchema>;
   // 检查用户名是否已存在
   const existingUser = await db.query.user.findFirst({
-    where: (user, { eq }) => eq(user.username, username)
+    where: (user, { eq }) => eq(user.username, formDataObj.username)
   });
   if (existingUser) {
     return data({ message: "用户名已存在" }, { status: 400 });
@@ -38,7 +37,7 @@ export async function action({ request }: Route.ActionArgs) {
 
   // 检查邮箱是否已存在
   const existingEmail = await db.query.user.findFirst({
-    where: (user, { eq }) => eq(user.email, email)
+    where: (user, { eq }) => eq(user.email, formDataObj.email)
   });
   if (existingEmail) {
     return data({ message: "邮箱已被注册" }, { status: 400 });
@@ -47,30 +46,27 @@ export async function action({ request }: Route.ActionArgs) {
   try {
     // 对密码进行加密
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(formDataObj.password, salt);
 
     // 创建新用户
     await db.insert(user).values({
-      username,
-      email,
+      ...formDataObj,
       password: hashedPassword
     });
 
     // 查询新创建的用户
     const newUser = await db.query.user.findFirst({
-      where: (user, { eq }) => eq(user.username, username)
+      where: (user, { eq }) => eq(user.username, formDataObj.username)
     });
 
     if (!newUser) {
-      throw new Error("用户创建失败");
+      return data({ message: "用户创建失败" }, { status: 400 });
     }
-
-    console.log("注册成功", newUser);
     // 获取 session 并设置用户信息
     const session = await getSession(request.headers.get("Cookie"));
     session.set("userId", newUser.id);
-    session.set("username", username);
-    session.set("email", email);
+    session.set("username", formDataObj.username);
+    session.set("email", formDataObj.email);
 
     // 返回成功响应，并设置 session cookie
     return redirect("/", {
@@ -82,13 +78,8 @@ export async function action({ request }: Route.ActionArgs) {
     return data({ message: "注册失败，请稍后重试" }, { status: 500 });
   }
 }
-const formSchema = z.object({
-  username: z.string().min(2, "用户名至少2个字符"),
-  password: z.string().min(6, "密码至少6个字符"),
-  email: z.string().email("请输入正确的邮箱")
-});
 
-export default function SignUp({ actionData }: Route.ComponentProps) {
+export default function SignUp() {
   const fetcher = useFetcher();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -100,12 +91,14 @@ export default function SignUp({ actionData }: Route.ComponentProps) {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    const formData = new FormData();
-    formData.append("username", values.username);
-    formData.append("password", values.password);
-    formData.append("email", values.email);
-    fetcher.submit(formData, { method: "post" });
+    fetcher.submit(values, { method: "post" });
   }
+
+  useEffect(() => {
+    if (fetcher.data) {
+      toast.error(fetcher.data.message);
+    }
+  }, [fetcher.data]);
 
   return (
     <Form {...form}>
