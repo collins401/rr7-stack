@@ -1,5 +1,5 @@
+import { Link } from "react-router";
 import { SquareTerminal } from "lucide-react";
-import { Github } from "@/components/icons";
 
 export default function IndexRoute() {
   return (
@@ -22,13 +22,14 @@ export default function IndexRoute() {
             <span className="font-semibold">Zero Config</span>
           </p>
           <div className="flex justify-center gap-4">
-            <a
-              href="#get-started"
+            <Link
+              to="/docs"
+              prefetch="intent"
               className="flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-lg font-medium text-purple-700 shadow-lg transition hover:bg-gray-100"
             >
               {/* <iconify-icon icon="octicon:terminal-16"></iconify-icon> */}
               <SquareTerminal /> Get Started
-            </a>
+            </Link>
           </div>
         </div>
       </div>

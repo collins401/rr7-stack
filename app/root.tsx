@@ -7,7 +7,7 @@ import {
   ScrollRestoration,
   useParams
 } from "react-router";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/sonner";
 import type { Route } from "./+types/root";
 import { ProgressBar } from "./components/progress-bar";
 import { ThemeSwitcherSafeHTML, ThemeSwitcherScript } from "./components/theme-switcher";

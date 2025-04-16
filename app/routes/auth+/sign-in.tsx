@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { data, Link, redirect } from "react-router";
 import { useFetcher } from "react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import bcrypt from "bcryptjs";
 import { Eye, EyeClosed } from "lucide-react";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,19 +26,18 @@ export async function loader() {
     GITHUB_URL: `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&redirect_uri=${process.env.REDIRECT_URI}`
   };
 }
+
+const formSchema = z.object({
+  username: z.string().min(1, "请输入用户名"),
+  password: z.string().min(1, "请输入密码")
+});
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
-  const username = formData.get("username") as string;
-  const password = formData.get("password") as string;
-
-  if (!username || !password) {
-    return data({ message: "所有字段都是必填的" }, { status: 400 });
-  }
-
+  const formDataObj = Object.fromEntries(formData) as z.infer<typeof formSchema>;
   try {
     // 查询用户
     const user = await db.query.user.findFirst({
-      where: (user, { eq }) => eq(user.username, username)
+      where: (user, { eq }) => eq(user.username, formDataObj.username)
     });
 
     if (!user) {
@@ -45,7 +45,7 @@ export async function action({ request }: Route.ActionArgs) {
     }
 
     // 验证密码
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    const isValidPassword = await bcrypt.compare(formDataObj.password, user.password);
     if (!isValidPassword) {
       return data({ message: "用户名或密码错误" }, { status: 400 });
     }
@@ -53,7 +53,7 @@ export async function action({ request }: Route.ActionArgs) {
     // 设置 session
     const session = await getSession(request.headers.get("Cookie"));
     session.set("userId", user.id);
-    session.set("username", username);
+    session.set("username", formDataObj.username);
 
     return redirect("/", {
       headers: {
@@ -64,10 +64,7 @@ export async function action({ request }: Route.ActionArgs) {
     return data({ message: "登录失败，请稍后重试" }, { status: 500 });
   }
 }
-const formSchema = z.object({
-  username: z.string().min(1, "请输入用户名"),
-  password: z.string().min(1, "请输入密码")
-});
+
 export default function SignIn({ loaderData }: Route.ComponentProps) {
   const [showPassword, setShowPassword] = useState(false);
   const fetcher = useFetcher();
@@ -85,6 +82,12 @@ export default function SignIn({ loaderData }: Route.ComponentProps) {
     formData.append("password", values.password);
     fetcher.submit(formData, { method: "post" });
   }
+
+  useEffect(() => {
+    if (fetcher.data) {
+      toast.warning(fetcher.data.message);
+    }
+  }, [fetcher.data]);
 
   function loginGithub() {
     location.href = loaderData.GITHUB_URL;
