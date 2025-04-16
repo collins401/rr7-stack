@@ -1,6 +1,6 @@
 import { Link, Outlet } from "react-router";
 import { UserRound } from "lucide-react";
-import { Logo } from "@/components/icons";
+import { Github } from "@/components/icons";
 import { ThemeSelector } from "@/components/theme-selector";
 import { UserNav } from "@/components/user-nav";
 import { getSession } from "@/lib/session";
@@ -20,21 +20,22 @@ export default function SiteLayout({ loaderData }: Route.ComponentProps) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header>
-        <div className="container mx-auto flex justify-between">
-          <div className="flex items-center">
-            <Logo />
-            <span>RR7-STACK</span>
-          </div>
-          <div className="flex items-center gap-3 py-3">
+      <header className="fixed top-0 z-10 w-full">
+        <div className="mx-auto flex max-w-4xl justify-between">
+          <div className="flex items-center"></div>
+          <div className="flex items-center gap-4 py-3">
+            <a href="https://github.com/collins401/rr7-stack" target="_blank" rel="noreferrer">
+              <Github className="size-5" />
+            </a>
+            <ThemeSelector />
             {user ? (
               <UserNav user={user} />
             ) : (
-              <Link to="/dashboard">
+              <Link to="/dashboard" prefetch="intent">
                 <UserRound size={18} />
               </Link>
             )}
-            <ThemeSelector />
+            <Link to="/auth/sign-in" prefetch="viewport"></Link>
           </div>
         </div>
       </header>

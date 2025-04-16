@@ -50,7 +50,7 @@ export default function ChangePassword({ actionData }: Route.ComponentProps) {
   }, [navigation.state, actionData]);
 
   return (
-    <div className="mx-auto max-w-4xl space-y-10">
+    <div className="mx-auto max-w-2xl space-y-10">
       <section className="space-y-2">
         <h1 className="text-base font-semibold capitalize">Change Password</h1>
         <p className="text-foreground/70">

@@ -2,7 +2,7 @@ import { Outlet, redirect } from "react-router";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getSession } from "@/lib/session";
-import { Route } from "./+types/_layout";
+import type { Route } from "./+types/_layout";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
